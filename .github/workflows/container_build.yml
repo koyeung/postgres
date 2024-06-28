@@ -1,0 +1,79 @@
+name: Build and push container
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ARCHS: amd64, arm64
+  IMAGE_NAME: postgres
+  REGISTRY: ghcr.io/koyeung
+
+jobs:
+  build:
+    name: Build postgres ${{ matrix.postgres_version }} image
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        postgres_version: [16]
+        experimental: [false]
+        include:
+          - postgres_version: 17
+            experimental: true
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Install qemu dependency
+        # for building image with arch different from host
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static
+
+      - name: Buildah Action
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ matrix.postgres_version }}
+          archs: ${{ env.ARCHS }}
+          containerfiles: |
+            ./${{ matrix.postgres_version }}/bookworm/Dockerfile
+
+      - name: Echo Outputs
+        run: |
+          echo "Image: ${{ steps.build-image.outputs.image }}"
+          echo "Tags: ${{ steps.build-image.outputs.tags }}"
+          echo "Tagged Image: ${{ steps.build-image.outputs.image-with-tag }}"
+
+      - name: Check manifest
+        run: |
+          set -x
+          buildah manifest inspect ${{ steps.build-image.outputs.image }}:${{ matrix.postgres_version }}
+
+      - name: Log in to the GitHub Container registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push to GitHub Container Repository
+        id: push-to-ghcr
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ${{ env.REGISTRY }}
+
+      - name: Print image URL
+        run: echo "Image pushed to ${{ steps.push-to-ghcr.outputs.registry-paths }}"
