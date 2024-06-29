@@ -1,3 +1,7 @@
+# https://github.com/koyeung/postgres
+
+This forks from https://github.com/docker-library/postgres , for build and publish container images to ghcr.io.
+
 # https://github.com/docker-library/postgres
 
 ## Maintained by: [the PostgreSQL Docker Community](https://github.com/docker-library/postgres)
@@ -12,10 +16,10 @@ For more information about the full official images change lifecycle, see [the "
 
 For outstanding `postgres` image PRs, check [PRs with the "library/postgres" label on the official-images repository](https://github.com/docker-library/official-images/labels/library%2Fpostgres). For the current "source of truth" for [`postgres`](https://hub.docker.com/_/postgres/), see [the `library/postgres` file in the official-images repository](https://github.com/docker-library/official-images/blob/master/library/postgres).
 
----
+______________________________________________________________________
 
--	[![build status badge](https://img.shields.io/github/actions/workflow/status/docker-library/postgres/ci.yml?branch=master&label=GitHub%20CI)](https://github.com/docker-library/postgres/actions?query=workflow%3A%22GitHub+CI%22+branch%3Amaster)
--	[![build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/update.sh/job/postgres.svg?label=Automated%20update.sh)](https://doi-janky.infosiftr.net/job/update.sh/job/postgres/)
+- [![build status badge](https://img.shields.io/github/actions/workflow/status/docker-library/postgres/ci.yml?branch=master&label=GitHub%20CI)](https://github.com/docker-library/postgres/actions?query=workflow%3A%22GitHub+CI%22+branch%3Amaster)
+- [![build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/update.sh/job/postgres.svg?label=Automated%20update.sh)](https://doi-janky.infosiftr.net/job/update.sh/job/postgres/)
 
 | Build | Status | Badges | (per-arch) |
 |:-:|:-:|:-:|:-:|
