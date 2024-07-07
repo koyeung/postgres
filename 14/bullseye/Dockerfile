@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:bullseye-slim
+FROM docker.io/library/debian:bullseye-slim
 
 # explicitly set user/group IDs
 RUN set -eux; \
