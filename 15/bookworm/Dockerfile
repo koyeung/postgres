@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:bookworm-slim
+FROM docker.io/library/debian:bookworm-slim
 
 # explicitly set user/group IDs
 RUN set -eux; \
