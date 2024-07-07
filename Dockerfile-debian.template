@@ -1,4 +1,4 @@
-FROM debian:{{ env.variant }}-slim
+FROM docker.io/library/debian:{{ env.variant }}-slim
 
 # explicitly set user/group IDs
 RUN set -eux; \

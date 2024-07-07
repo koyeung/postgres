@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:trixie-slim
+FROM docker.io/library/debian:trixie-slim
 
 # explicitly set user/group IDs
 RUN set -eux; \
