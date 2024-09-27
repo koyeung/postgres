@@ -30,8 +30,7 @@ repos:
         args: [--autofix]
       - id: trailing-whitespace
 
-  - repo: https://github.com/crate-ci/committed
-    rev: v1.0.20
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.29.0
     hooks:
-      - id: committed
-        stages: [commit-msg]
+      - id: commitizen
