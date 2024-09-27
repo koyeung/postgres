@@ -27,7 +27,7 @@ jobs:
         experimental: [false]
         include:
           - postgres_version: 17
-            experimental: true
+            experimental: false
 
     steps:
 
