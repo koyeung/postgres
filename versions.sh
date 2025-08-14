@@ -3,12 +3,12 @@ set -Eeuo pipefail
 
 # we will support at most two entries in each of these lists, and both should be in descending order
 supportedDebianSuites=(
+	trixie
 	bookworm
-	bullseye
 )
 supportedAlpineVersions=(
+	3.22
 	3.21
-	3.20
 )
 defaultDebianSuite="${supportedDebianSuites[0]}"
 declare -A debianSuites=(
@@ -151,4 +151,4 @@ for version in "${versions[@]}"; do
 	')"
 done
 
-jq <<<"$json" -S . > versions.json
+jq <<<"$json" 'to_entries | sort_by(.key | split(".") | map(tonumber? // .)) | reverse | from_entries' > versions.json

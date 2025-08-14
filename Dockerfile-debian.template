@@ -125,10 +125,9 @@ RUN set -ex; \
 # build .deb files from upstream's source packages (which are verified by apt-get)
 			nproc="$(nproc)"; \
 			export DEB_BUILD_OPTIONS="nocheck parallel=$nproc"; \
-# we have to build postgresql-common first because postgresql-$PG_MAJOR shares "debian/rules" logic with it: https://salsa.debian.org/postgresql/postgresql/-/commit/99f44476e258cae6bf9e919219fa2c5414fa2876
-# (and it "Depends: pgdg-keyring")
-			apt-get build-dep -y postgresql-common pgdg-keyring; \
-			apt-get source --compile postgresql-common pgdg-keyring; \
+# we have to build postgresql-common-dev first because postgresql-$PG_MAJOR shares "debian/rules" logic with it: https://salsa.debian.org/postgresql/postgresql/-/commit/f4338a0d28cf4541956bddb0f4e444ba9dba81b9
+			apt-get build-dep -y postgresql-common-dev; \
+			apt-get source --compile postgresql-common-dev; \
 			_update_repo; \
 {{ if .major == 13 then ( -}}
 # we need DEBIAN_FRONTEND on postgresql-13 for slapd ("Please enter the password for the admin entry in your LDAP directory."); see https://bugs.debian.org/929417
@@ -156,6 +155,12 @@ RUN set -ex; \
 	apt-get install -y --no-install-recommends \
 		"postgresql-$PG_MAJOR=$PG_VERSION" \
 	; \
+{{ if .major >= 18 then ( -}}
+# https://github.com/docker-library/postgres/pull/1344#issuecomment-2936578203 (JIT is a separate package in 18+, but only supported for a subset of architectures)
+	if apt-get install -s "postgresql-$PG_MAJOR-jit" > /dev/null 2>&1; then \
+		apt-get install -y --no-install-recommends "postgresql-$PG_MAJOR-jit=$PG_VERSION"; \
+	fi; \
+{{ ) else "" end -}}
 	\
 	rm -rf /var/lib/apt/lists/*; \
 	\
@@ -180,10 +185,20 @@ RUN set -eux; \
 
 RUN install --verbose --directory --owner postgres --group postgres --mode 3777 /var/run/postgresql
 
+{{ if .major >= 18 then ( -}}
+#
+# NOTE: in 18+, PGDATA has changed to match the pg_ctlcluster standard directory structure, and the VOLUME has moved from /var/lib/postgresql/data to /var/lib/postgresql
+#
+ENV PGDATA /var/lib/postgresql/{{ .major | tostring }}/docker
+RUN ln -svT . /var/lib/postgresql/data # https://github.com/docker-library/postgres/pull/1259#issuecomment-2215477494
+VOLUME /var/lib/postgresql
+# ("/var/lib/postgresql" is already pre-created with suitably usable permissions above)
+{{ ) else ( -}}
 ENV PGDATA /var/lib/postgresql/data
 # this 1777 will be replaced by 0700 at runtime (allows semi-arbitrary "--user" values)
 RUN install --verbose --directory --owner postgres --group postgres --mode 1777 "$PGDATA"
 VOLUME /var/lib/postgresql/data
+{{ ) end -}}
 
 COPY docker-entrypoint.sh docker-ensure-initdb.sh /usr/local/bin/
 RUN ln -sT docker-ensure-initdb.sh /usr/local/bin/docker-enforce-initdb.sh
