@@ -47,7 +47,7 @@ jobs:
           tags: ${{ matrix.postgres_version }}
           archs: ${{ env.ARCHS }}
           containerfiles: |
-            ./${{ matrix.postgres_version }}/bookworm/Dockerfile
+            ./${{ matrix.postgres_version }}/trixie/Dockerfile
 
       - name: Echo Outputs
         run: |
