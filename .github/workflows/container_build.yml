@@ -46,6 +46,8 @@ jobs:
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ matrix.postgres_version }}
           archs: ${{ env.ARCHS }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/koyeung/postgres#${{ github.sha }}
           oci: true
           containerfiles: |
             ./${{ matrix.postgres_version }}/trixie/Dockerfile
