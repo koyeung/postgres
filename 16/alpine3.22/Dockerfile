@@ -17,7 +17,7 @@ RUN set -eux; \
 
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
-ENV GOSU_VERSION 1.17
+ENV GOSU_VERSION 1.19
 RUN set -eux; \
 	\
 	apk add --no-cache --virtual .gosu-deps \
@@ -53,8 +53,8 @@ ENV LANG en_US.utf8
 RUN mkdir /docker-entrypoint-initdb.d
 
 ENV PG_MAJOR 16
-ENV PG_VERSION 16.9
-ENV PG_SHA256 07c00fb824df0a0c295f249f44691b86e3266753b380c96f633c3311e10bd005
+ENV PG_VERSION 16.10
+ENV PG_SHA256 de8485f4ce9c32e3ddfeef0b7c261eed1cecb54c9bcd170e437ff454cb292b42
 
 ENV DOCKER_PG_LLVM_DEPS \
 		llvm19-dev \
@@ -118,8 +118,8 @@ RUN set -eux; \
 # https://git.alpinelinux.org/aports/tree/community/postgresql15/APKBUILD?h=3.22-stable#n180 ("older clang versions don't have a 'clang' exe anymore.")
 	export CLANG=clang-19; \
 	\
-# configure options taken from:
-# https://anonscm.debian.org/cgit/pkg-postgresql/postgresql.git/tree/debian/rules?h=9.5
+# configure options mostly copying Debian:
+# https://salsa.debian.org/postgresql/postgresql-common/-/blob/6e26b5107295170cc8731a3acbf13228ea15941e/server/postgresql.mk#L32
 	./configure \
 		--enable-option-checking=fatal \
 		--build="$gnuArch" \
@@ -138,17 +138,17 @@ RUN set -eux; \
 		--with-includes=/usr/local/include \
 		--with-libraries=/usr/local/lib \
 		--with-gssapi \
+		--with-icu \
 		--with-ldap \
-		--with-tcl \
-		--with-perl \
-		--with-python \
-#		--with-pam \
-		--with-openssl \
 		--with-libxml \
 		--with-libxslt \
-		--with-icu \
 		--with-llvm \
 		--with-lz4 \
+		--with-openssl \
+#		--with-pam \
+		--with-perl \
+		--with-python \
+		--with-tcl \
 		--with-zstd \
 	; \
 	make -j "$(nproc)" world-bin; \

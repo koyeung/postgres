@@ -17,7 +17,7 @@ RUN set -eux; \
 
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
-ENV GOSU_VERSION 1.17
+ENV GOSU_VERSION 1.19
 RUN set -eux; \
 	\
 	apk add --no-cache --virtual .gosu-deps \
@@ -52,8 +52,8 @@ ENV LANG en_US.utf8
 RUN mkdir /docker-entrypoint-initdb.d
 
 ENV PG_MAJOR 18
-ENV PG_VERSION 18beta2
-ENV PG_SHA256 1d16b58244b630194432b88d9ff25f5fea85a001ff2c715a157d4be6787f3075
+ENV PG_VERSION 18.0
+ENV PG_SHA256 0d5b903b1e5fe361bca7aa9507519933773eb34266b1357c4e7780fdee6d6078
 
 ENV DOCKER_PG_LLVM_DEPS \
 		llvm19-dev \
@@ -102,6 +102,9 @@ RUN set -eux; \
 		lz4-dev \
 # https://www.postgresql.org/docs/15/release-15.html "--with-zstd to enable Zstandard builds"
 		zstd-dev \
+# https://salsa.debian.org/postgresql/postgresql-common/-/commit/89c384273f4c4092483598c292b1b1b188816cce
+# https://www.postgresql.org/docs/18/install-make.html#CONFIGURE-OPTION-WITH-LIBURING
+		liburing-dev \
 	; \
 	\
 	cd /usr/src/postgresql; \
@@ -117,8 +120,8 @@ RUN set -eux; \
 # https://git.alpinelinux.org/aports/tree/community/postgresql15/APKBUILD?h=3.22-stable#n180 ("older clang versions don't have a 'clang' exe anymore.")
 	export CLANG=clang-19; \
 	\
-# configure options taken from:
-# https://anonscm.debian.org/cgit/pkg-postgresql/postgresql.git/tree/debian/rules?h=9.5
+# configure options mostly copying Debian:
+# https://salsa.debian.org/postgresql/postgresql-common/-/blob/6e26b5107295170cc8731a3acbf13228ea15941e/server/postgresql.mk#L32
 	./configure \
 		--enable-option-checking=fatal \
 		--build="$gnuArch" \
@@ -136,17 +139,18 @@ RUN set -eux; \
 		--with-includes=/usr/local/include \
 		--with-libraries=/usr/local/lib \
 		--with-gssapi \
+		--with-icu \
 		--with-ldap \
-		--with-tcl \
-		--with-perl \
-		--with-python \
-#		--with-pam \
-		--with-openssl \
+		--with-liburing \
 		--with-libxml \
 		--with-libxslt \
-		--with-icu \
 		--with-llvm \
 		--with-lz4 \
+		--with-openssl \
+#		--with-pam \
+		--with-perl \
+		--with-python \
+		--with-tcl \
 		--with-zstd \
 	; \
 	make -j "$(nproc)" world-bin; \

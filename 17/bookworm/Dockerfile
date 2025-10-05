@@ -28,7 +28,7 @@ RUN set -ex; \
 
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
-ENV GOSU_VERSION 1.17
+ENV GOSU_VERSION 1.19
 RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
@@ -89,7 +89,7 @@ RUN set -ex; \
 ENV PG_MAJOR 17
 ENV PATH $PATH:/usr/lib/postgresql/$PG_MAJOR/bin
 
-ENV PG_VERSION 17.5-1.pgdg120+1
+ENV PG_VERSION 17.6-2.pgdg12+1
 
 RUN set -ex; \
 	\
@@ -97,7 +97,7 @@ RUN set -ex; \
 	export PYTHONDONTWRITEBYTECODE=1; \
 	\
 	dpkgArch="$(dpkg --print-architecture)"; \
-	aptRepo="[ signed-by=/usr/local/share/keyrings/postgres.gpg.asc ] http://apt.postgresql.org/pub/repos/apt/ bookworm-pgdg main $PG_MAJOR"; \
+	aptRepo="[ signed-by=/usr/local/share/keyrings/postgres.gpg.asc ] http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main $PG_MAJOR"; \
 	case "$dpkgArch" in \
 		amd64 | arm64 | ppc64el) \
 # arches officialy built by upstream
