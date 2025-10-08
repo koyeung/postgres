@@ -12,7 +12,7 @@ concurrency:
 env:
   ARCHS: amd64, arm64
   IMAGE_NAME: postgres
-  REGISTRY: ghcr.io/koyeung
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
 
 jobs:
   build:
@@ -47,7 +47,7 @@ jobs:
           tags: ${{ matrix.postgres_version }}
           archs: ${{ env.ARCHS }}
           labels: |
-            org.opencontainers.image.source=https://github.com/koyeung/postgres#${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}#${{ github.sha }}
           oci: true
           containerfiles: |
             ./${{ matrix.postgres_version }}/trixie/Dockerfile
