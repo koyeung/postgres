@@ -32,6 +32,6 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.10.1
+    rev: v4.13.8
     hooks:
       - id: commitizen
